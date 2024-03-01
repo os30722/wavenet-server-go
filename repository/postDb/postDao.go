@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hepa/wavenet/vo"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,6 +16,17 @@ func GetPostDao(db *pgxpool.Pool) *postDao {
 	return &postDao{
 		db: db,
 	}
+}
+
+func (pd postDao) UploadPost(ctx context.Context, upload vo.PostUpload) error {
+	var db = pd.db
+	err := db.QueryRow(ctx, "insert into posts(title, description, status, url) values ($1, $2, $3, $4)", upload.Title, upload.Description,
+		"Published", upload.FileName).Scan()
+	if err != nil && err != pgx.ErrNoRows {
+		return err
+	}
+
+	return nil
 }
 
 func (pd postDao) GetPosts(ctx context.Context, params vo.PageParams) ([]vo.Post, error) {

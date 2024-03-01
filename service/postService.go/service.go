@@ -1,13 +1,23 @@
 package postService
 
-import "github.com/hepa/wavenet/repository/postDb"
+import (
+	"github.com/gorilla/mux"
+	md "github.com/hepa/wavenet/middleware"
+	"github.com/hepa/wavenet/repository/postDb"
+)
 
 type postService struct {
 	postRepo postDb.PostRepo
 }
 
-func NewAuthService(repo postDb.PostRepo) *postService {
+func newService(repo postDb.PostRepo) *postService {
 	return &postService{
 		postRepo: repo,
 	}
+}
+
+func RegisterService(router *mux.Router, repo postDb.PostRepo) {
+	postService := newService(repo)
+	router.Handle("/getPost", md.ErrHandler(postService.GetPosts)).Methods("GET")
+	router.Handle("/upload", md.ErrHandler(postService.UploadPost)).Methods("POST")
 }

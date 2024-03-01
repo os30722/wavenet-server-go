@@ -17,24 +17,24 @@ func (au authService) Login(res http.ResponseWriter, req *http.Request) *cerr.Ap
 
 	err := json.NewDecoder(req.Body).Decode(&userInput)
 	if err != nil {
-		return cerr.HttpError(err, "", 500)
+		return cerr.HttpError(err, 500)
 	}
 
 	if userInput.Email == "" && userInput.Pass == "" {
-		return cerr.HttpError(err, "", 500)
+		return cerr.HttpError(err, 500)
 	}
 
 	userCred, err := repo.GetUserCred(req.Context(), strings.ToLower(userInput.Email))
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return cerr.HttpError(err, "", 401)
+			return cerr.HttpError(err, 401)
 		}
-		return cerr.HttpError(err, "", 500)
+		return cerr.HttpError(err, 500)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(userCred.Pass), []byte(userInput.Pass))
 	if err != nil {
-		return cerr.HttpError(err, "", 401)
+		return cerr.HttpError(err, 401)
 	}
 
 	json.NewEncoder(res).Encode(vo.Message{Msg: "Successful"})
@@ -48,23 +48,23 @@ func (au authService) SignUp(res http.ResponseWriter, req *http.Request) *cerr.A
 
 	err := json.NewDecoder(req.Body).Decode(&form)
 	if err != nil {
-		return cerr.HttpError(err, "", 500)
+		return cerr.HttpError(err, 500)
 	}
 
 	// @TODO = To validate user input
 
 	duplicates, err := repo.FindDuplicate(ctx, form.Username, form.Email)
 	if err != nil {
-		return cerr.HttpError(err, "", 500)
+		return cerr.HttpError(err, 500)
 	}
 
 	if len(duplicates) > 0 {
-		return cerr.HttpError(err, strings.Join(duplicates, "|"), 409)
+		return cerr.HttpErrorWithMsg(err, strings.Join(duplicates, "|"), 409)
 	}
 
 	_, err = repo.SignUp(ctx, form)
 	if err != nil {
-		return cerr.HttpError(err, "", 500)
+		return cerr.HttpError(err, 500)
 	}
 
 	json.NewEncoder(res).Encode(vo.Message{Msg: "Successful"})

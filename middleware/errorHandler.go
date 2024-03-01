@@ -25,13 +25,13 @@ func (fn ErrHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		case 400:
 			fmt.Println(err)
 			res.WriteHeader(400)
-			res.Write([]byte(`{"err":"Bad Request"}`))
+			json.NewEncoder(res).Encode(vo.Message{Msg: "Bad Request"})
 			break
 
 		case 401:
 			fmt.Println(err)
 			res.WriteHeader(401)
-			res.Write([]byte(`{"msg":"Unauthorized"}`))
+			json.NewEncoder(res).Encode(vo.Message{Msg: "Unauthorized"})
 			break
 
 		case 409:
@@ -49,10 +49,17 @@ type AppError struct {
 	Code  int
 }
 
-func HttpError(err error, msg string, code int) *AppError {
+func HttpErrorWithMsg(err error, msg string, code int) *AppError {
 	return &AppError{
 		Error: err,
 		Msg:   msg,
+		Code:  code,
+	}
+}
+
+func HttpError(err error, code int) *AppError {
+	return &AppError{
+		Error: err,
 		Code:  code,
 	}
 }

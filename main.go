@@ -6,7 +6,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hepa/wavenet/database"
-	md "github.com/hepa/wavenet/middleware"
 	"github.com/hepa/wavenet/repository/postDb"
 	"github.com/hepa/wavenet/repository/userDb"
 	"github.com/hepa/wavenet/service/authService"
@@ -31,6 +30,8 @@ func homeRoute(res http.ResponseWriter, req *http.Request) {
 func router() *mux.Router {
 	router := mux.NewRouter()
 
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
+
 	db, err := database.GetPostgres()
 	if err != nil || db == nil {
 		log.Fatal(err)
@@ -39,12 +40,11 @@ func router() *mux.Router {
 	userDao := userDb.GetUserDao(db)
 	postDao := postDb.GetPostDao(db)
 
-	authService := authService.NewAuthService(userDao)
-	router.Handle("/auth/login", md.ErrHandler(authService.Login)).Methods("Post")
-	router.Handle("/auth/signup", md.ErrHandler(authService.SignUp)).Methods("Post")
+	authRouter := router.PathPrefix("/auth").Subrouter()
+	authService.RegisterService(authRouter, userDao)
 
-	postService := postService.NewAuthService(postDao)
-	router.Handle("/posts/getPost", md.ErrHandler(postService.GetPosts)).Methods("GET")
+	postRouter := router.PathPrefix("/posts").Subrouter()
+	postService.RegisterService(postRouter, postDao)
 
 	router.HandleFunc("/", homeRoute)
 

@@ -6,3 +6,9 @@ type Post struct {
 	Url    string `json:"url"`
 	User   string `json:"user"`
 }
+
+type PostUpload struct {
+	Title       string
+	Description string
+	FileName    string
+}

@@ -1,7 +1,7 @@
 package vo
 
 type Message struct {
-	Msg string `json:"ms'g"`
+	Msg string `json:"msg"`
 }
 
 type PageParams struct {
