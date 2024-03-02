@@ -3,6 +3,7 @@ package postService
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	cerr "github.com/hepa/wavenet/middleware"
 	"github.com/hepa/wavenet/utils"
@@ -61,14 +62,17 @@ func (po postService) UploadPost(res http.ResponseWriter, req *http.Request) *ce
 		return cerr.HttpError(err, 500)
 	}
 
-	upload.FileName, err = reader.NextFilePart(utils.FilePart{
-		Field: "recoding",
+	fileName, err := reader.NextFilePart(utils.FilePart{
+		Field: "recording",
 	})
 	if err != nil {
 		return cerr.HttpError(err, 500)
 	}
 
-	go ffmpeg.EncodeAudioFile(upload.FileName)
+	upload.FileName = strings.Split(fileName, ".")[0]
+	upload.Extention = strings.Split(fileName, ".")[1]
+
+	go ffmpeg.EncodeAudioFile(upload.FileName, upload.Extention)
 
 	err = repo.UploadPost(ctx, upload)
 	if err != nil {

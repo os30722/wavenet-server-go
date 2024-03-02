@@ -18,6 +18,6 @@ func newService(repo postDb.PostRepo) *postService {
 
 func RegisterService(router *mux.Router, repo postDb.PostRepo) {
 	postService := newService(repo)
-	router.Handle("/getPost", md.ErrHandler(postService.GetPosts)).Methods("GET")
+	router.Handle("/getPosts", md.ErrHandler(postService.GetPosts)).Methods("GET")
 	router.Handle("/upload", md.ErrHandler(postService.UploadPost)).Methods("POST")
 }

@@ -12,4 +12,5 @@ type PostUpload struct {
 	Description string
 	FileName    string
 	UserId      int
+	Extention   string
 }
