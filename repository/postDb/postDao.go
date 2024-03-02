@@ -20,8 +20,8 @@ func GetPostDao(db *pgxpool.Pool) *postDao {
 
 func (pd postDao) UploadPost(ctx context.Context, upload vo.PostUpload) error {
 	var db = pd.db
-	err := db.QueryRow(ctx, "insert into posts(title, description, status, url) values ($1, $2, $3, $4)", upload.Title, upload.Description,
-		"Published", upload.FileName).Scan()
+	err := db.QueryRow(ctx, "insert into posts(title, description, status, url, user_id) values ($1, $2, $3, $4, $5)", upload.Title, upload.Description,
+		"Published", upload.FileName, upload.UserId).Scan()
 	if err != nil && err != pgx.ErrNoRows {
 		return err
 	}
@@ -39,7 +39,7 @@ func (pd postDao) GetPosts(ctx context.Context, params vo.PageParams) ([]vo.Post
 		vars = append(vars, params.Cursor)
 	}
 
-	var query = `select post_id, title, name as user, url from posts join users on users.user_id=posts.user_id where posts.status = 'Published'
+	var query = `select post_id, title, username as user, url from posts join users on users.user_id=posts.user_id where posts.status = 'Published'
 			` + cursor + `order by posts.post_id desc limit $1`
 
 	rows, err := db.Query(ctx, query, vars...)
@@ -50,7 +50,7 @@ func (pd postDao) GetPosts(ctx context.Context, params vo.PageParams) ([]vo.Post
 	posts := make([]vo.Post, 0, params.PageSize)
 	for rows.Next() {
 		var post vo.Post
-		err = rows.Scan(&post.PostId, &post.Title, &post.User, &post.Url)
+		err = rows.Scan(&post.PostId, &post.Title, &post.UserName, &post.Url)
 		if err != nil {
 			return posts, err
 		}

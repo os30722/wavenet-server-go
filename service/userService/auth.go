@@ -1,4 +1,4 @@
-package authService
+package userService
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (au authService) Login(res http.ResponseWriter, req *http.Request) *cerr.AppError {
+func (au userService) Login(res http.ResponseWriter, req *http.Request) *cerr.AppError {
 	var repo = au.userRepo
 	var userInput vo.UserCred
 
@@ -41,7 +41,7 @@ func (au authService) Login(res http.ResponseWriter, req *http.Request) *cerr.Ap
 	return nil
 }
 
-func (au authService) SignUp(res http.ResponseWriter, req *http.Request) *cerr.AppError {
+func (au userService) SignUp(res http.ResponseWriter, req *http.Request) *cerr.AppError {
 	var form vo.UserForm
 	var repo = au.userRepo
 	var ctx = req.Context()

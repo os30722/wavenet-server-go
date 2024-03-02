@@ -20,24 +20,20 @@ func (fn ErrHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 			fmt.Println(err)
 			res.WriteHeader(500)
 			res.Write(errStr)
-			break
 
 		case 400:
 			fmt.Println(err)
 			res.WriteHeader(400)
 			json.NewEncoder(res).Encode(vo.Message{Msg: "Bad Request"})
-			break
 
 		case 401:
 			fmt.Println(err)
 			res.WriteHeader(401)
 			json.NewEncoder(res).Encode(vo.Message{Msg: "Unauthorized"})
-			break
 
 		case 409:
 			res.WriteHeader(409)
 			json.NewEncoder(res).Encode(vo.Message{Msg: err.Msg})
-			break
 		}
 
 	}

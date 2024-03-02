@@ -41,9 +41,15 @@ func (po postService) UploadPost(res http.ResponseWriter, req *http.Request) *ce
 	}
 
 	ctx := req.Context()
+	uid, ok := utils.GetUid(ctx)
+	if !ok {
+		return cerr.HttpError(err, 500)
+	}
+
 	repo := po.postRepo
 
 	var upload vo.PostUpload
+	upload.UserId = uid
 
 	upload.Title, err = reader.NextTextPart("title")
 	if err != nil {

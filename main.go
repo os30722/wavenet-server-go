@@ -6,10 +6,11 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hepa/wavenet/database"
+	"github.com/hepa/wavenet/middleware"
 	"github.com/hepa/wavenet/repository/postDb"
 	"github.com/hepa/wavenet/repository/userDb"
-	"github.com/hepa/wavenet/service/authService"
 	"github.com/hepa/wavenet/service/postService.go"
+	"github.com/hepa/wavenet/service/userService"
 )
 
 func main() {
@@ -40,10 +41,13 @@ func router() *mux.Router {
 	userDao := userDb.GetUserDao(db)
 	postDao := postDb.GetPostDao(db)
 
-	authRouter := router.PathPrefix("/auth").Subrouter()
-	authService.RegisterService(authRouter, userDao)
+	authRouter := router.PathPrefix("/").Subrouter()
+	authRouter.Use(middleware.Authenticator)
 
-	postRouter := router.PathPrefix("/posts").Subrouter()
+	userRouter := router.PathPrefix("/user").Subrouter()
+	userService.RegisterService(userRouter, userDao)
+
+	postRouter := authRouter.PathPrefix("/posts").Subrouter()
 	postService.RegisterService(postRouter, postDao)
 
 	router.HandleFunc("/", homeRoute)
