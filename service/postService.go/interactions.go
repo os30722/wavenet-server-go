@@ -10,7 +10,7 @@ import (
 	"github.com/hepa/wavenet/utils"
 )
 
-func (po postService) LikePost(res http.ResponseWriter, req *http.Request) *cerr.AppError {
+func (po postService) LikeUnlikePost(res http.ResponseWriter, req *http.Request) *cerr.AppError {
 	repo := po.postRepo
 	vars := mux.Vars(req)
 
@@ -19,13 +19,23 @@ func (po postService) LikePost(res http.ResponseWriter, req *http.Request) *cerr
 		return cerr.HttpError(errors.New("require post id"), 500)
 	}
 
+	action := req.URL.Query().Get("action")
+	if action != "add" && action != "remove" {
+		return cerr.HttpError(err, 500)
+	}
+
 	ctx := req.Context()
 	uid, err := utils.GetUid(ctx)
 	if err != nil {
 		return cerr.HttpError(err, 500)
 	}
 
-	err = repo.LikePost(ctx, postId, uid)
+	if action == "add" {
+		err = repo.LikePost(ctx, postId, uid)
+	} else {
+		err = repo.UnlikePost(ctx, postId, uid)
+	}
+
 	if err != nil {
 		return cerr.HttpError(err, 500)
 	}
