@@ -11,8 +11,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (au userService) Login(res http.ResponseWriter, req *http.Request) *cerr.AppError {
-	var repo = au.userRepo
+func (us userService) Login(res http.ResponseWriter, req *http.Request) *cerr.AppError {
+	var repo = us.userRepo
 	var userInput vo.UserCred
 
 	err := json.NewDecoder(req.Body).Decode(&userInput)
@@ -41,9 +41,9 @@ func (au userService) Login(res http.ResponseWriter, req *http.Request) *cerr.Ap
 	return nil
 }
 
-func (au userService) SignUp(res http.ResponseWriter, req *http.Request) *cerr.AppError {
+func (us userService) SignUp(res http.ResponseWriter, req *http.Request) *cerr.AppError {
 	var form vo.UserForm
-	var repo = au.userRepo
+	var repo = us.userRepo
 	var ctx = req.Context()
 
 	err := json.NewDecoder(req.Body).Decode(&form)
@@ -62,7 +62,7 @@ func (au userService) SignUp(res http.ResponseWriter, req *http.Request) *cerr.A
 		return cerr.HttpErrorWithMsg(err, strings.Join(duplicates, "|"), 409)
 	}
 
-	_, err = repo.SignUp(ctx, form)
+	err = repo.SignUp(ctx, form)
 	if err != nil {
 		return cerr.HttpError(err, 500)
 	}

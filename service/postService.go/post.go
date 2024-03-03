@@ -18,9 +18,14 @@ func (po postService) GetPosts(res http.ResponseWriter, req *http.Request) *cerr
 	}
 
 	ctx := req.Context()
+	uid, err := utils.GetUid(ctx)
+	if err != nil {
+		return cerr.HttpError(err, 500)
+	}
+
 	repo := po.postRepo
 
-	posts, err := repo.GetPosts(ctx, *pageParams)
+	posts, err := repo.GetPosts(ctx, uid, pageParams)
 	if err != nil {
 		return cerr.HttpError(err, 500)
 	}
@@ -42,8 +47,8 @@ func (po postService) UploadPost(res http.ResponseWriter, req *http.Request) *ce
 	}
 
 	ctx := req.Context()
-	uid, ok := utils.GetUid(ctx)
-	if !ok {
+	uid, err := utils.GetUid(ctx)
+	if err != nil {
 		return cerr.HttpError(err, 500)
 	}
 

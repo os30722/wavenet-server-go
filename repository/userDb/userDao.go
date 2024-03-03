@@ -4,19 +4,8 @@ import (
 	"context"
 
 	"github.com/hepa/wavenet/vo"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type userDao struct {
-	db *pgxpool.Pool
-}
-
-func GetUserDao(db *pgxpool.Pool) *userDao {
-	return &userDao{
-		db: db,
-	}
-}
 
 func (ur userDao) GetUserCred(ctx context.Context, email string) (*vo.UserCred, error) {
 	var db = ur.db
@@ -30,20 +19,19 @@ func (ur userDao) GetUserCred(ctx context.Context, email string) (*vo.UserCred, 
 	return &userCred, nil
 }
 
-func (ur userDao) SignUp(ctx context.Context, form vo.UserForm) (int, error) {
+func (ur userDao) SignUp(ctx context.Context, form vo.UserForm) error {
 	var db = ur.db
-	var id int
 	hash, err := bcrypt.GenerateFromPassword([]byte(form.Pass), 10)
 	if err != nil {
-		return -1, err
+		return err
 	}
-	err = db.QueryRow(ctx, "insert into  users(name,dob,gender,username,email,password) values($1,$2,$3,$4,$5,$6) returning user_id",
-		form.Name, form.Dob, string(form.Gender[0]), form.Username, form.Email, hash).Scan(&id)
+	_, err = db.Exec(ctx, "insert into  users(name,dob,gender,username,email,password) values($1,$2,$3,$4,$5,$6)",
+		form.Name, form.Dob, string(form.Gender[0]), form.Username, form.Email, hash)
 	if err != nil {
-		return -1, err
+		return err
 	}
 
-	return id, nil
+	return nil
 }
 
 func (ur userDao) FindDuplicate(ctx context.Context, username string, email string) ([]string, error) {
