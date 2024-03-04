@@ -7,6 +7,7 @@ type Post struct {
 	UserName  string `json:"username"`
 	Likes     int    `json:"likes"`
 	UserLiked bool   `json:"user_liked"`
+	Comments  int    `json:"comments"`
 }
 
 type PostUpload struct {

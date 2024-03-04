@@ -31,7 +31,7 @@ func (pd postDao) GetPosts(ctx context.Context, userId int, params *vo.PageParam
 		vars = append(vars, params.Cursor)
 	}
 
-	var query = `select posts.post_id, title, username as user, url, likes, likes.post_id is not null as user_liked
+	var query = `select posts.post_id, title, username as user, url, likes, likes.post_id is not null as user_liked, comments
 		from posts join users on users.user_id=posts.user_id 
 		left join likes on likes.post_id = posts.post_id and users.user_id = $1 
 		where posts.status = 'Published'
@@ -45,7 +45,7 @@ func (pd postDao) GetPosts(ctx context.Context, userId int, params *vo.PageParam
 	posts := make([]vo.Post, 0, params.PageSize)
 	for rows.Next() {
 		var post vo.Post
-		err = rows.Scan(&post.PostId, &post.Title, &post.UserName, &post.Url, &post.Likes, &post.UserLiked)
+		err = rows.Scan(&post.PostId, &post.Title, &post.UserName, &post.Url, &post.Likes, &post.UserLiked, &post.Comments)
 		if err != nil {
 			return posts, err
 		}

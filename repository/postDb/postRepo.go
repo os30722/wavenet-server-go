@@ -24,4 +24,6 @@ type PostRepo interface {
 	// Interactions
 	LikePost(ctx context.Context, postId int, userId int) error
 	UnlikePost(ctx context.Context, postId int, userId int) error
+	AddComment(ctx context.Context, comment vo.Comment, userId int) error
+	RemoveCommment(ctx context.Context, comment vo.Comment, userId int) error
 }

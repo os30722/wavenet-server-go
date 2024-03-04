@@ -22,4 +22,5 @@ func RegisterService(router *mux.Router, repo postDb.PostRepo) {
 	router.Handle("/upload", md.ErrHandler(postService.UploadPost)).Methods("POST")
 	router.Handle("/upload", md.ErrHandler(postService.UploadPost)).Methods("POST")
 	router.Handle("/like/{id}", md.ErrHandler(postService.LikeUnlikePost)).Methods("POST")
+	router.Handle("/comment", md.ErrHandler(postService.Comment)).Methods("POST")
 }
