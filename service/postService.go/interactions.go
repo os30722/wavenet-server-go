@@ -53,7 +53,7 @@ func (po postService) Comment(res http.ResponseWriter, req *http.Request) *cerr.
 		return cerr.HttpError(err, 500)
 	}
 
-	var commment vo.Comment
+	var commment vo.CommentForm
 	err = json.NewDecoder(req.Body).Decode(&commment)
 	if err != nil {
 		return cerr.HttpError(err, 500)

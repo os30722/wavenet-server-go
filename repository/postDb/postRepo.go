@@ -24,6 +24,9 @@ type PostRepo interface {
 	// Interactions
 	LikePost(ctx context.Context, postId int, userId int) error
 	UnlikePost(ctx context.Context, postId int, userId int) error
-	AddComment(ctx context.Context, comment vo.Comment, userId int) error
-	RemoveCommment(ctx context.Context, comment vo.Comment, userId int) error
+	GetLikes(ctx context.Context, postId int, userId int, params *vo.PageParams) ([]vo.Like, error)
+
+	AddComment(ctx context.Context, comment vo.CommentForm, userId int) error
+	RemoveCommment(ctx context.Context, comment vo.CommentForm, userId int) error
+	GetComments(ctx context.Context, postId int, userId int, params *vo.PageParams) ([]vo.Comment, error)
 }

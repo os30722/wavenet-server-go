@@ -60,7 +60,7 @@ func (pd postDao) UnlikePost(ctx context.Context, postId int, userId int) error 
 	return nil
 }
 
-func (pd postDao) AddComment(ctx context.Context, comment vo.Comment, userId int) error {
+func (pd postDao) AddComment(ctx context.Context, comment vo.CommentForm, userId int) error {
 	var db = pd.db
 	tx, err := db.Begin(ctx)
 	if err != nil {
@@ -85,7 +85,7 @@ func (pd postDao) AddComment(ctx context.Context, comment vo.Comment, userId int
 			return errors.New("wrong insert")
 		}
 
-		_, err = tx.Exec(ctx, "update comments set child_comments=child_comments+1 where comment_id=$1", comment.ParentId)
+		_, err = tx.Exec(ctx, "update comments set replies_count=replies_count+1 where comment_id=$1", comment.ParentId)
 	}
 
 	if err != nil {
@@ -103,7 +103,7 @@ func (pd postDao) AddComment(ctx context.Context, comment vo.Comment, userId int
 	return nil
 }
 
-func (pd postDao) RemoveCommment(ctx context.Context, comment vo.Comment, userId int) error {
+func (pd postDao) RemoveCommment(ctx context.Context, comment vo.CommentForm, userId int) error {
 	var db = pd.db
 	tx, err := db.Begin(ctx)
 	if err != nil {
@@ -133,7 +133,7 @@ func (pd postDao) RemoveCommment(ctx context.Context, comment vo.Comment, userId
 	rowsAffected += 1
 
 	if parentId != 0 {
-		_, err = tx.Exec(ctx, "update comments set child_comments=child_comments-1 where comment_id=$1", comment.ParentId)
+		_, err = tx.Exec(ctx, "update comments set replies_count=replies_count-1 where comment_id=$1", comment.ParentId)
 		if err != nil {
 			return err
 		}
