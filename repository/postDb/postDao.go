@@ -31,9 +31,9 @@ func (pd postDao) GetPosts(ctx context.Context, userId int, params *vo.PageParam
 		vars = append(vars, params.Cursor)
 	}
 
-	query := `select posts.post_id, title, username as user, url, likes, likes.post_id is not null as user_liked, comments
+	query := `select posts.post_id, title, username as user, url, likes, post_likes.post_id is not null as user_liked, comments
 		from posts join users on users.user_id=posts.user_id 
-		left join likes on likes.post_id = posts.post_id and users.user_id = $1 
+		left join post_likes on post_likes.post_id = posts.post_id and users.user_id = $1 
 		where posts.status = 'Published'
 			` + cursor + `order by posts.post_id desc limit $2`
 
@@ -100,12 +100,12 @@ func (pd postDao) GetLikes(ctx context.Context, postId int, userId int, params *
 
 	var cursor string = ""
 	if params.Cursor != 0 {
-		cursor = " and likes.like_id < $4 "
+		cursor = " and post_likes.like_id < $4 "
 		vars = append(vars, params.Cursor)
 	}
 
-	query := `select username from likes
-	join users on likes.user_id = users.user_id where post_id=$1 ` + cursor + ` order by likes.user_id=$2 desc, 
+	query := `select username from post_likes
+	join users on post_likes.user_id = users.user_id where post_id=$1 ` + cursor + ` order by post_likes.user_id=$2 desc, 
 	like_id desc limit $3`
 
 	rows, err := db.Query(ctx, query, vars...)

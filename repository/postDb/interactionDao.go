@@ -16,7 +16,7 @@ func (pd postDao) LikePost(ctx context.Context, postId int, userId int) error {
 	}
 	defer tx.Rollback(ctx)
 
-	_, err = tx.Exec(ctx, "insert into likes(post_id,user_id) values($1,$2)", postId, userId)
+	_, err = tx.Exec(ctx, "insert into post_likes(post_id,user_id) values($1,$2)", postId, userId)
 	if err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func (pd postDao) UnlikePost(ctx context.Context, postId int, userId int) error 
 	}
 	defer tx.Rollback(ctx)
 
-	commandTag, err := tx.Exec(ctx, "delete from likes where post_id=$1 and user_id=$2", postId, userId)
+	commandTag, err := tx.Exec(ctx, "delete from post_likes where post_id=$1 and user_id=$2", postId, userId)
 	if err != nil {
 		return err
 	}
