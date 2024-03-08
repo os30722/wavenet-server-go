@@ -9,7 +9,7 @@ type CommentForm struct {
 
 type Comment struct {
 	CommentId    int    `json:"comment_id"`
-	Msg          string `json:"string"`
+	Content      string `json:"msg"`
 	Username     string `json:"username"`
 	RepliesCount int    `json:"replies_count"`
 }

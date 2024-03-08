@@ -82,7 +82,7 @@ func (pd postDao) GetComments(ctx context.Context, postId int, userId int, param
 	comments := make([]vo.Comment, 0, params.PageSize)
 	for rows.Next() {
 		var comment vo.Comment
-		err = rows.Scan(&comment.CommentId, &comment.Msg, &comment.Username, &comment.RepliesCount)
+		err = rows.Scan(&comment.CommentId, &comment.Content, &comment.Username, &comment.RepliesCount)
 		if err != nil {
 			return comments, err
 		}
