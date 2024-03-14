@@ -28,5 +28,5 @@ type PostRepo interface {
 
 	AddComment(ctx context.Context, comment vo.CommentForm, userId int) error
 	RemoveCommment(ctx context.Context, comment vo.CommentForm, userId int) error
-	GetComments(ctx context.Context, postId int, userId int, params *vo.PageParams) ([]vo.Comment, error)
+	GetComments(ctx context.Context, postId int, userId int, parentId int, params *vo.PageParams) ([]vo.Comment, error)
 }

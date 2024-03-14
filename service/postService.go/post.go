@@ -104,13 +104,19 @@ func (po postService) GetComments(res http.ResponseWriter, req *http.Request) *c
 		return cerr.HttpError(err, 400)
 	}
 
+	parentId, err := strconv.Atoi(req.URL.Query().Get("parentid"))
+	if err != nil && errors.Is(err, &strconv.NumError{}) {
+		return cerr.HttpError(err, 500)
+	}
+
 	ctx := req.Context()
 	uid, err := utils.GetUid(ctx)
 	if err != nil {
 		return cerr.HttpError(err, 500)
 	}
 
-	comments, err := repo.GetComments(ctx, postId, uid, pageParams)
+	var comments []vo.Comment
+	comments, err = repo.GetComments(ctx, postId, uid, parentId, pageParams)
 	if err != nil {
 		return cerr.HttpError(err, 500)
 	}

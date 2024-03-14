@@ -25,7 +25,7 @@ func Authenticator(next http.Handler) http.Handler {
 
 		// 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		claims := make(map[string]any)
-		claims["UID"] = 44
+		claims["UID"] = 1
 		ctx := req.Context()
 		ctx = context.WithValue(ctx, utils.GetUserContextKey(utils.ClaimsKey), claims)
 		next.ServeHTTP(res, req.WithContext(ctx))

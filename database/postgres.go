@@ -13,7 +13,7 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	password = "hepadell"
+	password = "oishik"
 	dbname   = "wavenet"
 )
 

@@ -2,6 +2,7 @@ package postDb
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/hepa/wavenet/vo"
 	"github.com/jackc/pgx/v5"
@@ -56,16 +57,23 @@ func (pd postDao) GetPosts(ctx context.Context, userId int, params *vo.PageParam
 	return posts, nil
 }
 
-func (pd postDao) GetComments(ctx context.Context, postId int, userId int, params *vo.PageParams) ([]vo.Comment, error) {
+func (pd postDao) GetComments(ctx context.Context, postId int, userId int, parentId int, params *vo.PageParams) ([]vo.Comment, error) {
 	var db = pd.db
-	var vars = make([]interface{}, 0, 4)
+	var vars = make([]interface{}, 0, 5)
 
 	vars = append(vars, postId, userId, params.PageSize)
 
 	var cursor string = ""
+	if parentId != 0 {
+		vars = append(vars, parentId)
+		cursor = " and parent_id =  $" + strconv.Itoa(len(vars))
+	} else {
+		cursor = " and parent_id is null "
+	}
+
 	if params.Cursor != 0 {
-		cursor = " and comments.comment_id < $4 "
 		vars = append(vars, params.Cursor)
+		cursor += " and comments.comment_id < $" + strconv.Itoa(len(vars))
 	}
 
 	query := `select comment_id, content, username, replies_count from comments 
